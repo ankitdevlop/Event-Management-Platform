@@ -43,6 +43,7 @@ module.exports = {
                 duration,
                 createdBy,
                 category,
+                eventData,
                 attendedPeople: []
             });
             await event.save();
