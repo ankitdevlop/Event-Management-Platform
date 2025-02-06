@@ -21,6 +21,9 @@ const eventSchema = new Schema({
     category: {
         type: String
     },
+    eventData: {
+        type: String
+    },
     attendedPeople: {
         type: [Schema.Types.ObjectId],
         ref: 'User',
