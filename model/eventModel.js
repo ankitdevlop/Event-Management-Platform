@@ -21,7 +21,7 @@ const eventSchema = new Schema({
     category: {
         type: String
     },
-    eventData: {
+    eventDate: {
         type: String
     },
     attendedPeople: {
