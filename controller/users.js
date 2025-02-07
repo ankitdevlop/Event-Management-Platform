@@ -2,6 +2,7 @@
 const moment = require('moment');
 const md5 = require('md5');
 const userModel = require("../model/userModel");
+
 var dotenv = require('dotenv').config()
 const jwt = require('jsonwebtoken');
 module.exports = {
@@ -89,6 +90,17 @@ module.exports = {
             }
         }
     },
+    getUserInfo:async (req, res) => {
+        const userIdToFecth = req.auth.userId;
+        try {
+          const user = await userModel.findById(userIdToFecth).select('-password'); // Exclude password
+          if (!user) return res.status(404).json({ message: "User not found" });
+      
+          res.json(user);
+        } catch (error) {
+          res.status(500).json({ message: 'Server Error' });
+        }
+      }
 
 
 };

@@ -10,6 +10,7 @@ const PORT = 4000;
 connectDB();
 
 app.use(cors());
+app.use(express.json({ limit: "10mb" }))
 app.use(bodyParser.json({ limit: "100mb" }));
 app.use(bodyParser.urlencoded({ extended: true, parameterLimit: 100000, limit: "100mb" }));
 

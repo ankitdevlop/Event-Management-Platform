@@ -11,5 +11,6 @@ router.get("/getEventById" ,jwtTokenVerify,  EventController.getEventById);
 router.put("/updateEvent" ,jwtTokenVerify,  EventController.updateEvent);
 router.delete("/deleteEvent" ,jwtTokenVerify,  EventController.deleteEvent);
 router.get("/attendEvent" ,jwtTokenVerify,  EventController.attendEvent);
+router.post("/uploadImg" ,  jwtTokenVerify,EventController.uploadImg);
 
 module.exports = router;

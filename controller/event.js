@@ -5,6 +5,7 @@ const userModel = require("../model/userModel");
 const EventModel = require("../model/eventModel");
 var dotenv = require('dotenv').config()
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary');
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 8080 });
@@ -24,6 +25,12 @@ const broadcastAttendees = async (eventId) => {
         });
     }
 };
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 module.exports = {
     createEvent:async (req, res) => {
@@ -174,6 +181,20 @@ module.exports = {
         } catch (error) {
             console.error("Error:", error);
             res.status(500).json({ error: "Internal Server Error" });
+        }
+    },
+    uploadImg: async (req, res) => {
+        const { base64Image } = req.body;
+        try {
+            const uploadResponse = await cloudinary.uploader.upload(base64Image, {
+                folder: "event_images",
+            });
+    
+            // Send response back to the client
+            return res.json({ imageUrl: uploadResponse.secure_url });
+        } catch (error) {
+            console.error("Image upload error:", error);
+            res.status(500).json({ error: "Image upload failed" });
         }
     }
 };
