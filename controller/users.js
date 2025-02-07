@@ -16,10 +16,14 @@ module.exports = {
             if (user) return res.status(400).json({ error: "User already exists" });
     
             const hashedPassword = await md5(password);
+            
             user = new userModel({ name, email, password: hashedPassword});
             await user.save();
+            const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, {
+                expiresIn: "1h",
+            });
     
-            res.status(201).json({ message: "User registered successfully" });
+            res.status(201).json({ message: "User registered successfully",token:token });
         } catch (error) {
             console.log('error', error)
 

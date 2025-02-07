@@ -28,7 +28,7 @@ const broadcastAttendees = async (eventId) => {
 module.exports = {
     createEvent:async (req, res) => {
         try {
-            const { eventName, eventDescription, eventImage, duration } = req.body;
+            const { eventName, eventDescription, eventImage, duration,category,eventDate } = req.body;
             const createdBy = req.auth.userId;
             console.log('req.user', req.body)
     
@@ -54,25 +54,53 @@ module.exports = {
             res.status(500).json({ error: "Internal Server Error" });
         }
     },
-    getEvent:async (req, res) => {
+    getEvent: async (req, res) => {
         try {
             const { category, startDate, endDate } = req.query;
-            let filter = {};
-
+            let filter = {}; // Initialize filter object
+    
             if (category) {
-                filter.category = category;
+                filter.category = category; // Filter by category if provided
             }
+    
             if (startDate && endDate) {
-                filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+                filter.eventDate = { 
+                    $gte: new Date(startDate), 
+                    $lte: new Date(endDate) 
+                };
             }
-
-            const events = await EventModel.find(filter);
-            res.status(200).json({ events });
+    
+            // Fetch events based on filters
+            const filteredEvents = await EventModel.find(filter);
+    
+            // Get the current date
+            const currentDate = new Date();
+    
+            // Separate past and upcoming events based on eventDate
+            const pastEvents = filteredEvents.filter(event => new Date(event.eventDate) < currentDate);
+            const upcomingEvents = filteredEvents.filter(event => new Date(event.eventDate) >= currentDate);
+    
+            // Fetch all events and group them by category
+            const allEvents = await EventModel.find({});
+            const eventsByCategory = allEvents.reduce((acc, event) => {
+                if (!acc[event.category]) {
+                    acc[event.category] = [];
+                }
+                acc[event.category].push(event);
+                return acc;
+            }, {});
+    
+            res.status(200).json({ 
+                pastEvents, 
+                upcomingEvents,
+                eventsByCategory 
+            });
         } catch (error) {
             console.error("Error:", error);
             res.status(500).json({ error: "Internal Server Error" });
         }
-    },
+    },    
+    
     getEventById:async (req, res) => {
         try {
             const { eventId } = req.query;
